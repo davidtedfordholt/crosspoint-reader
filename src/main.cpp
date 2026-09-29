@@ -30,6 +30,8 @@
 #include "MappedInputManager.h"
 #include "OpdsServerStore.h"
 #include "RecentBooksStore.h"
+#include "HouseSettings.h"
+#include "HouseChecklistStore.h"
 #include "SdCardFontSystem.h"
 #include "activities/Activity.h"
 #include "activities/ActivityManager.h"
@@ -427,6 +429,8 @@ void setup() {
   I18N.setLanguage(static_cast<Language>(SETTINGS.language));
   KOREADER_STORE.loadFromFile();
   OPDS_STORE.loadFromFile();
+  HOUSE_SETTINGS.loadFromFile();
+  HOUSE_CHECKLIST.loadFromFile();
   UITheme::getInstance().reload();
   ButtonNavigator::setMappedInputManager(mappedInputManager);
 
