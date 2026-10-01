@@ -5,6 +5,7 @@
 #include <SecureHttpClient.h>
 
 #include "HouseSettings.h"
+#include "HouseCalendarStore.h"
 
 using freeink::SecureHttpClient;
 
@@ -93,6 +94,34 @@ bool HouseSyncClient::postToggle(const std::string& id, bool done, std::string& 
   if (!ok) err = "http " + std::to_string(lastHttpCode);
   http.end();
   return ok;
+}
+
+bool HouseSyncClient::fetchCalendar(std::string& err) {
+  if (HOUSE_SETTINGS.getIcsUrl().empty()) {
+    err = "calendar url not configured";
+    return false;
+  }
+
+  SecureHttpClient http;
+  if (!http.begin(HOUSE_SETTINGS.getIcsUrl())) {
+    err = "bad calendar url";
+    return false;
+  }
+  lastHttpCode = http.GET();
+  if (lastHttpCode != 200) {
+    err = "http " + std::to_string(lastHttpCode);
+    http.end();
+    return false;
+  }
+  const std::string body = http.getString();
+  http.end();
+
+  std::vector<HouseCalendarItem> events;
+  if (!HouseCalendarStore::parseIcs(body, events, err)) return false;
+  HOUSE_CALENDAR.replaceEvents(std::move(events));
+  HOUSE_CALENDAR.markFetched(static_cast<int64_t>(time(nullptr)));
+  LOG_INF("HOUSE", "calendar fetched: %zu events", HOUSE_CALENDAR.getEvents().size());
+  return true;
 }
 
 bool HouseSyncClient::flushPending(std::string& err) {

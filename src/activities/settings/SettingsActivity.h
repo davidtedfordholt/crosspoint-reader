@@ -20,6 +20,7 @@ enum class SettingAction {
   Network,
   ClearCache,
   HouseChecklist,
+  HouseCalendar,
   CheckForUpdates,
   SdFirmwareUpdate,
   Language,

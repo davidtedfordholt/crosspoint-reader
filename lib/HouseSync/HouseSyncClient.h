@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "HouseChecklistStore.h"
+#include "HouseCalendarStore.h"
 
 /**
  * HTTP client for the house checklist endpoints (kaw server, plan Phase 0).
@@ -32,6 +33,10 @@ class HouseSyncClient {
   static bool flushPending(std::string& err);
 
   static int getLastHttpCode() { return lastHttpCode; }
+
+  // Fetch the ICS feed from HOUSE_SETTINGS.getIcsUrl(), parse it and cache
+  // to SD. Returns false + err on failure; SD cache untouched on failure.
+  static bool fetchCalendar(std::string& err);
 
  private:
   static int lastHttpCode;
